@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greg's Calendar · 15min Slot Manager</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f0f11;
+    --surface: #1a1a1e;
+    --surface2: #222226;
+    --border: #2c2c32;
+    --text: #e8e8ed;
+    --text2: #9b9ba3;
+    --text3: #6b6b73;
+    --accent: #6c5ce7;
+    --accent2: #a78bfa;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --green: #22c55e;
+    --blue: #3b82f6;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro", "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: "SF Mono", "JetBrains Mono", "Fira Code", monospace;
+  }
+  html, body { height: 100%; font-family: var(--font); background: var(--bg); color: var(--text); }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3a3a44; }
+  .app { display: flex; flex-direction: column; height: 100vh; max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; gap: 8px; }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .header-left h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+  .header-left .badge { font-size: 11px; background: var(--surface2); color: var(--text2); padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border); }
+  .header-left .sync-status { font-size: 10px; color: var(--text3); font-family: var(--mono); display: flex; align-items: center; gap: 4px; }
+  .header-left .sync-status .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+  .header-left .sync-status .dot.green { background: var(--green); }
+  .header-left .sync-status .dot.amber { background: var(--amber); }
+  .header-left .sync-status .dot.red { background: var(--red); }
+  .header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .header-actions button, .btn {
+    padding: 6px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text); font-size: 13px; cursor: pointer;
+    transition: background .15s, border-color .15s;
+    font-family: var(--font); white-space: nowrap;
+  }
+  .header-actions button:hover, .btn:hover { background: var(--border); border-color: #3a3a44; }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  .btn-primary:hover { background: #7c6df7; border-color: #7c6df7; }
+  .btn-danger { background: transparent; border-color: var(--red); color: var(--red); }
+  .btn-danger:hover { background: rgba(239,68,68,0.12); }
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+  .month-nav { display: flex; align-items: center; justify-content: center; gap: 20px; padding: 16px 0 12px; flex-shrink: 0; flex-wrap: wrap; }
+  .month-nav h2 { font-size: 22px; font-weight: 700; min-width: 200px; text-align: center; letter-spacing: -0.5px; }
+  .month-nav .nav-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: background .15s; }
+  .month-nav .nav-btn:hover { background: var(--surface2); }
+  .month-nav .today-btn { font-size: 12px; padding: 4px 14px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface); color: var(--text2); cursor: pointer; }
+  .month-nav .today-btn:hover { background: var(--surface2); color: var(--text); }
+  .month-picker-wrap { position: relative; display: inline-block; }
+  .month-picker-wrap select { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+  .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; padding: 0 2px; margin-bottom: 4px; flex-shrink: 0; }
+  .weekdays span { text-align: center; font-size: 12px; font-weight: 600; color: var(--text2); padding: 6px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+  .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; padding: 0 2px; flex: 1; min-height: 0; }
+  .day-cell { background: var(--surface); border-radius: var(--radius-sm); padding: 4px; cursor: pointer; transition: background .15s; position: relative; display: flex; flex-direction: column; min-height: 60px; overflow: hidden; border: 1px solid transparent; }
+  .day-cell:hover { background: var(--surface2); }
+  .day-cell.other-month { opacity: 0.3; }
+  .day-cell.today { border-color: var(--accent); }
+  .day-cell.selected { background: rgba(108,92,231,0.15); border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .day-cell .day-num { font-size: 13px; font-weight: 600; padding: 2px 4px 4px; color: var(--text); flex-shrink: 0; }
+  .day-cell.today .day-num { background: var(--accent); color: #fff; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; padding: 0; }
+  .day-cell .block-dots { display: flex; flex-wrap: wrap; gap: 2px; padding: 0 2px; }
+  .day-cell .block-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .day-cell .day-drain-summary { display: flex; gap: 2px; padding: 1px 2px; margin-top: auto; flex-wrap: wrap; }
+  .day-cell .drain-chip { font-size: 9px; padding: 0 4px; border-radius: 3px; color: #fff; line-height: 14px; white-space: nowrap; }
+  .day-view { display: none; flex-direction: column; flex: 1; min-height: 0; padding-top: 8px; }
+  .day-view.active { display: flex; }
+  .day-view-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 4px; border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; gap: 8px; }
+  .day-view-header h3 { font-size: 18px; font-weight: 700; }
+  .day-view-header .day-info { font-size: 13px; color: var(--text2); }
+  .day-view-header .day-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .back-btn { cursor: pointer; padding: 4px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 13px; }
+  .back-btn:hover { background: var(--border); }
+  .time-grid-wrap { flex: 1; overflow-y: auto; padding: 4px 0; position: relative; }
+  .time-grid { position: relative; min-height: 100%; }
+  .time-row { display: flex; border-bottom: 1px solid rgba(44,44,50,0.4); height: 32px; position: relative; }
+  .time-row .time-label { width: 52px; font-size: 10px; color: var(--text3); font-family: var(--mono); padding: 2px 6px 0 0; text-align: right; flex-shrink: 0; position: relative; top: -6px; user-select: none; }
+  .time-row .slot-area { flex: 1; display: flex; position: relative; }
+  .time-row .slot { flex: 1; cursor: pointer; position: relative; transition: background .1s; }
+  .time-row .slot:hover { background: rgba(108,92,231,0.08); }
+  .time-row .slot + .slot { border-left: 1px solid rgba(44,44,50,0.15); }
+  .blocks-overlay { position: absolute; top: 0; left: 52px; right: 0; bottom: 0; pointer-events: none; }
+  .grid-block { position: absolute; left: 2px; right: 2px; border-radius: var(--radius-sm); padding: 2px 6px; cursor: pointer; pointer-events: auto; overflow: hidden; border-left: 3px solid; transition: opacity .15s; font-size: 11px; line-height: 1.3; min-height: 20px; display: flex; flex-direction: column; justify-content: center; }
+  .grid-block:hover { opacity: 0.85; filter: brightness(1.15); }
+  .grid-block .bl-title { font-weight: 600; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .grid-block .bl-time { font-size: 9px; opacity: 0.7; font-family: var(--mono); }
+  .grid-block.tier-red { background: rgba(239,68,68,0.2); border-left-color: var(--red); color: #fca5a5; }
+  .grid-block.tier-amber { background: rgba(245,158,11,0.2); border-left-color: var(--amber); color: #fcd34d; }
+  .grid-block.tier-green { background: rgba(34,197,94,0.2); border-left-color: var(--green); color: #86efac; }
+  .grid-block.tier-blue { background: rgba(59,130,246,0.2); border-left-color: var(--blue); color: #93c5fd; }
+  .now-line { position: absolute; left: 52px; right: 0; height: 2px; background: var(--red); pointer-events: none; z-index: 10; }
+  .now-line::before { content: '●'; position: absolute; left: -7px; top: -5px; font-size: 10px; color: var(--red); }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+  .modal-overlay.active { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; width: 420px; max-width: 92vw; max-height: 90vh; overflow-y: auto; }
+  .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+  .modal .field { margin-bottom: 14px; }
+  .modal .field label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 4px; }
+  .modal .field input, .modal .field textarea, .modal .field select { width: 100%; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-size: 14px; font-family: var(--font); outline: none; transition: border-color .15s; }
+  .modal .field input:focus, .modal .field textarea:focus, .modal .field select:focus { border-color: var(--accent); }
+  .modal .field textarea { resize: vertical; min-height: 60px; font-size: 13px; }
+  .modal .field .tier-select { display: flex; gap: 8px; }
+  .modal .field .tier-btn { flex: 1; padding: 8px; border-radius: var(--radius-sm); border: 2px solid var(--border); background: var(--surface2); cursor: pointer; text-align: center; font-size: 20px; transition: border-color .15s, background .15s; }
+  .modal .field .tier-btn:hover { border-color: var(--text3); }
+  .modal .field .tier-btn.active { border-color: var(--accent); background: rgba(108,92,231,0.12); }
+  .modal .field .tier-btn .tier-label { display: block; font-size: 9px; color: var(--text3); margin-top: 2px; }
+  .modal .field .time-row-inputs { display: flex; gap: 8px; align-items: center; }
+  .modal .field .time-row-inputs input { flex: 1; }
+  .modal .field .time-row-inputs span { color: var(--text3); }
+  .modal .field .hunai-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; padding: 6px 10px; border-radius: var(--radius-sm); background: var(--surface2); border: 1px solid var(--border); }
+  .modal .field .hunai-toggle input { width: auto; margin: 0; }
+  .modal .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px; }
+  .modal .modal-actions .spacer { flex: 1; }
+  .input-mono { font-family: var(--mono) !important; font-size: 12px !important; }
+  .legend { display: flex; gap: 14px; padding: 8px 0; flex-shrink: 0; justify-content: center; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text2); }
+  .legend-item .swatch { width: 10px; height: 10px; border-radius: 3px; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 20px; font-size: 13px; color: var(--text); z-index: 200; opacity: 0; transition: opacity .3s; pointer-events: none; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+  .toast.show { opacity: 1; }
+  .settings-info { font-size: 12px; color: var(--text2); line-height: 1.6; }
+  .settings-info code { background: var(--surface2); padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+  @media (max-width: 640px) {
+    .app { padding: 0 8px; }
+    .header-left h1 { font-size: 16px; }
+    .month-nav h2 { font-size: 18px; min-width: 160px; }
+    .day-cell { min-height: 44px; padding: 2px; }
+    .day-cell .day-num { font-size: 11px; }
+    .modal { width: 100%; max-width: 100%; border-radius: 0; min-height: 100vh; }
+    .modal-overlay.active { align-items: flex-end; }
+    .time-row { height: 28px; }
+    .time-row .time-label { width: 42px; font-size: 9px; }
+    .blocks-overlay { left: 42px; }
+    .legend { gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>Greg's Calendar</h1>
+      <span class="badge">15min slots</span>
+      <span class="sync-status" id="syncStatus"><span class="dot amber"></span> loading...</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-sm" onclick="openSettings()">⚙️</button>
+      <button class="btn btn-sm" onclick="syncNow()">☁️ Sync</button>
+      <button class="btn btn-sm" onclick="exportData()">Export</button>
+      <button class="btn btn-sm" onclick="document.getElementById('importFile').click()">Import</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+      <button class="btn btn-sm" onclick="toggleDayView()" id="viewToggleBtn">📅 Day</button>
+    </div>
+  </div>
+
+  <!-- Month Navigation -->
+  <div class="month-nav">
+    <button class="nav-btn" onclick="shiftMonth(-12)" title="Previous year">⏪</button>
+    <button class="nav-btn" onclick="shiftMonth(-1)" title="Previous month">◀</button>
+    <div class="month-picker-wrap">
+      <h2 class="month-picker-label" id="monthLabel">Loading...</h2>
+      <select aria-label="Select month" id="monthPicker" onchange="goToMonth(this.value)"></select>
+    </div>
+    <button class="nav-btn" onclick="shiftMonth(1)" title="Next month">▶</button>
+    <button class="nav-btn" onclick="shiftMonth(12)" title="Next year">⏩</button>
+    <button class="today-btn" onclick="goToToday()">Today</button>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <span class="legend-item"><span class="swatch" style="background:var(--red)"></span> High</span>
+    <span class="legend-item"><span class="swatch" style="background:var(--amber)"></span> Medium</span>
+    <span class="legend-item"><span class="swatch" style="background:var(--green)"></span> Low</span>
+    <span class="legend-item"><span class="swatch" style="background:var(--blue)"></span> Restorative</span>
+    <span class="legend-item" style="color:var(--text3);font-size:10px">Click a day to schedule</span>
+  </div>
+
+  <div class="weekdays">
+    <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+  </div>
+
+  <div class="month-grid" id="monthGrid"></div>
+
+  <div class="day-view" id="dayView">
+    <div class="day-view-header">
+      <div>
+        <h3 id="dayViewTitle">Today</h3>
+        <div class="day-info" id="dayViewInfo"></div>
+      </div>
+      <div class="day-actions">
+        <button class="btn btn-sm btn-primary" onclick="autoInsertRecovery()">🔵 Auto Recovery</button>
+        <button class="btn btn-sm" onclick="clearDay()">Clear Day</button>
+        <button class="back-btn" onclick="closeDayView()">← Month</button>
+      </div>
+    </div>
+    <div class="time-grid-wrap">
+      <div class="time-grid" id="timeGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Block Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3 id="modalTitle">New Block</h3>
+    <div class="field">
+      <label>What are you doing?</label>
+      <input type="text" id="blockTitle" placeholder="e.g. Bajaj pricing review" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Drain Tier</label>
+      <div class="tier-select" id="tierSelect">
+        <button class="tier-btn" data-tier="🔴" onclick="selectTier(this)">🔴<span class="tier-label">High</span></button>
+        <button class="tier-btn active" data-tier="🟡" onclick="selectTier(this)">🟡<span class="tier-label">Medium</span></button>
+        <button class="tier-btn" data-tier="🟢" onclick="selectTier(this)">🟢<span class="tier-label">Low</span></button>
+        <button class="tier-btn" data-tier="🔵" onclick="selectTier(this)">🔵<span class="tier-label">Restore</span></button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Time</label>
+      <div class="time-row-inputs">
+        <input type="time" id="blockStart" step="900" value="09:00">
+        <span>to</span>
+        <input type="time" id="blockEnd" step="900" value="10:00">
+      </div>
+    </div>
+    <div class="field">
+      <label>Notes (optional)</label>
+      <textarea id="blockNotes" placeholder="Context, prep needed, links..."></textarea>
+    </div>
+    <div class="field">
+      <label class="hunai-toggle">
+        <input type="checkbox" id="hunaiToggle">
+        <span>🏢 Hunar.ai work</span>
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger btn-sm" id="deleteBtn" style="display:none" onclick="deleteBlock()">Delete</button>
+      <span class="spacer"></span>
+      <button class="btn btn-sm" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBlock()">Save Block</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settingsOverlay">
+  <div class="modal">
+    <h3>⚙️ GitHub Sync Settings</h3>
+    <div class="settings-info" style="margin-bottom:16px;color:var(--text3);font-size:12px;">
+      Your calendar data syncs to <code>Gregipe/greg_calendar/calendar-data.json</code> on GitHub.
+      Enter your token once per device — it's saved in your browser's localStorage.
+    </div>
+    <div class="field">
+      <label>GitHub Personal Access Token</label>
+      <input type="password" id="githubTokenInput" class="input-mono" placeholder="github_pat_..." autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Owner</label>
+      <input type="text" id="githubOwnerInput" class="input-mono" value="Gregipe" readonly style="opacity:0.6;">
+    </div>
+    <div class="field">
+      <label>Repository</label>
+      <input type="text" id="githubRepoInput" class="input-mono" value="greg_calendar" readonly style="opacity:0.6;">
+    </div>
+    <div class="field" id="syncInfoField" style="font-size:11px;color:var(--text3);">
+      Last sync: <span id="lastSyncTime">never</span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-sm btn-danger" onclick="clearToken()">Clear Token</button>
+      <span class="spacer"></span>
+      <button class="btn btn-sm" onclick="testGitHubConnection()">Test Connection</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── GitHub Config ──────────────────────────────
+const GITHUB_OWNER = 'Gregipe';
+const GITHUB_REPO = 'greg_calendar';
+const DATA_PATH = 'calendar-data.json';
+const DATA_KEY = 'greg_calendar_data';
+const SEL_DAY_KEY = 'greg_calendar_selected';
+const TOKEN_KEY = 'greg_github_token';
+const SYNC_TIME_KEY = 'greg_last_sync';
+
+let currentView = 'month';
+let viewDate = new Date();
+let selectedDate = null;
+let editingBlockId = null;
+let _syncInProgress = false;
+
+const SEED_DATA = {"version":1,"lastUpdated":"2026-05-11T11:15:00","settings":{"dayStart":"06:00","dayEnd":"22:00","slotMinutes":15,"tiers":{"🔴":{"label":"High Drain","color":"#ef4444"},"🟡":{"label":"Medium Drain","color":"#f59e0b"},"🟢":{"label":"Low Drain","color":"#22c55e"},"🔵":{"label":"Restorative","color":"#3b82f6"}},"recoveryMinutes":15,"recoveryTier":"🔵","noBackToBack":["🔴"],"hunaiPrefix":"Hunar.ai : "},"days":{"2026-05-11":{"notes":"Monday — Planning + syncs","blocks":[{"id":"bl_001","start":"08:30","end":"09:15","title":"Deep work block","tier":"🔴","notes":"Bajaj analysis / ESOP / strategic — peak morning brain"},{"id":"bl_002","start":"09:15","end":"09:30","title":"Reset — water, stand, step outside","tier":"🔵","notes":""},{"id":"bl_003","start":"09:30","end":"10:30","title":"Hunar.ai : Morning Pilot Sync","tier":"🟡","notes":"Mon/Thu recurring"},{"id":"bl_004","start":"10:30","end":"10:45","title":"Reset — walk, stretch","tier":"🔵","notes":""},{"id":"bl_005","start":"10:45","end":"12:00","title":"Deep work block","tier":"🔴","notes":"Continue strategic work / proposal prep"},{"id":"bl_006","start":"12:00","end":"12:45","title":"Hunar.ai : Magic Billion <> Hunar.ai","tier":"🟡","notes":""},{"id":"bl_007","start":"12:45","end":"13:00","title":"Walk / water / lunch transition","tier":"🔵","notes":""},{"id":"bl_008","start":"13:00","end":"13:30","title":"Lunch + low-input reading","tier":"🟢","notes":"Articles, research, podcast"},{"id":"bl_009","start":"13:30","end":"14:00","title":"Output block","tier":"🟡","notes":"LinkedIn drafting / comms / follow-ups"},{"id":"bl_010","start":"14:00","end":"14:30","title":"Commercials","tier":"🟡","notes":"Meeting"},{"id":"bl_011","start":"14:30","end":"15:00","title":"1Mg SBI","tier":"🟡","notes":"Meeting"},{"id":"bl_012","start":"15:00","end":"15:30","title":"Recovery layer","tier":"🔵","notes":"🚶 10min walk outside (no phone) → 🏋️ 3x pullups / 10 pushups → 💧 350ml water"},{"id":"bl_013","start":"15:30","end":"16:00","title":"Research / input","tier":"🟢","notes":"VoiceAI readings, industry intel"},{"id":"bl_014","start":"16:00","end":"17:00","title":"Wind-down / overflow","tier":"🟢","notes":"Overflow or lighter work"}]}}};
+
+function getToken() { return localStorage.getItem(TOKEN_KEY) || ''; }
+function setToken(t) { localStorage.setItem(TOKEN_KEY, t); }
+function clearToken() { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem(SYNC_TIME_KEY); updateSyncStatus(); showToast('Token cleared'); closeSettings(); }
+
+function getLastSync() { return localStorage.getItem(SYNC_TIME_KEY) || null; }
+function setLastSync(t) { localStorage.setItem(SYNC_TIME_KEY, t); }
+
+function updateSyncStatus(color, msg) {
+  const el = document.getElementById('syncStatus');
+  if (!el) return;
+  const dot = color || 'amber';
+  const text = msg || (
+    dot === 'green' ? 'synced ' + (getLastSync() ? new Date(getLastSync()).toLocaleTimeString() : '') :
+    dot === 'red' ? 'sync failed' : 'no sync configured'
+  );
+  el.innerHTML = `<span class="dot ${dot}"></span> ${text}`;
+}
+
+// ─── GitHub API ─────────────────────────────────
+async function fetchFromGitHub() {
+  const token = getToken();
+  if (!token) return null;
+  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_PATH}`;
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github.v3+json' } });
+  if (!res.ok) {
+    if (res.status === 404) return { exists: false, sha: null };
+    throw new Error(`GitHub fetch error ${res.status}`);
+  }
+  const data = await res.json();
+  const content = atob(data.content.replace(/\n/g, ''));
+  return { exists: true, sha: data.sha, content: JSON.parse(content) };
+}
+
+async function pushToGitHub(dataObj, sha) {
+  const token = getToken();
+  if (!token) return false;
+  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_PATH}`;
+  const body = {
+    message: 'Calendar update ' + new Date().toISOString().slice(0, 16).replace('T', ' '),
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(dataObj, null, 2)))),
+    sha: sha || undefined
+  };
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Accept: 'application/vnd.github.v3+json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    console.error('GitHub push failed:', res.status, err);
+    return false;
+  }
+  return true;
+}
+
+// ─── Data Layer ─────────────────────────────────
+async function loadFromCloud() {
+  try {
+    const result = await fetchFromGitHub();
+    if (result && result.exists) {
+      localStorage.setItem(DATA_KEY, JSON.stringify(result.content));
+      setLastSync(new Date().toISOString());
+      updateSyncStatus('green');
+      return result.content;
+    }
+    if (result && !result.exists) {
+      // Data file doesn't exist yet — push the localStorage data to create it
+      const local = getLocalData();
+      const pushed = await pushToGitHub(local, null);
+      if (pushed) {
+        setLastSync(new Date().toISOString());
+        updateSyncStatus('green');
+      }
+      return local;
+    }
+    updateSyncStatus('amber', 'no token set');
+    return null;
+  } catch (e) {
+    console.warn('Cloud load failed:', e);
+    updateSyncStatus('red', 'sync unavailable');
+    return null;
+  }
+}
+
+function getLocalData() {
+  let raw = localStorage.getItem(DATA_KEY);
+  if (!raw) {
+    localStorage.setItem(DATA_KEY, JSON.stringify(SEED_DATA));
+    return JSON.parse(JSON.stringify(SEED_DATA));
+  }
+  try { return JSON.parse(raw); }
+  catch { 
+    localStorage.setItem(DATA_KEY, JSON.stringify(SEED_DATA));
+    return JSON.parse(JSON.stringify(SEED_DATA));
+  }
+}
+
+function getData() { return getLocalData(); }
+
+function saveData(data) {
+  data.lastUpdated = new Date().toISOString().slice(0, 19);
+  localStorage.setItem(DATA_KEY, JSON.stringify(data));
+  // Async push to GitHub
+  if (getToken()) {
+    setTimeout(() => pushToCloud(data), 100);
+  }
+}
+
+async function pushToCloud(data) {
+  if (_syncInProgress) return;
+  _syncInProgress = true;
+  try {
+    const existing = await fetchFromGitHub();
+    const sha = existing && existing.exists ? existing.sha : null;
+    const ok = await pushToGitHub(data, sha);
+    if (ok) {
+      setLastSync(new Date().toISOString());
+      updateSyncStatus('green');
+    } else {
+      updateSyncStatus('red', 'sync failed');
+    }
+  } catch (e) {
+    console.warn('Push failed:', e);
+    updateSyncStatus('red', 'sync error');
+  } finally {
+    _syncInProgress = false;
+  }
+}
+
+async function syncNow() {
+  if (_syncInProgress) { showToast('⏳ Sync already in progress'); return; }
+  updateSyncStatus('amber', 'syncing...');
+  const token = getToken();
+  if (!token) { showToast('⚠️ Set GitHub token in Settings (⚙️) first'); updateSyncStatus('amber'); return; }
+  try {
+    const cloud = await fetchFromGitHub();
+    if (cloud && cloud.exists) {
+      // Merge: cloud wins for existing days, local has latest blocks
+      const local = getLocalData();
+      const merged = { ...local, days: { ...local.days } };
+      for (const [dateKey, dayData] of Object.entries(cloud.content.days || {})) {
+        if (!merged.days[dateKey]) {
+          merged.days[dateKey] = dayData;
+        }
+      }
+      localStorage.setItem(DATA_KEY, JSON.stringify(merged));
+      setLastSync(new Date().toISOString());
+      updateSyncStatus('green');
+      renderMonth();
+      showToast('☁️ Synced from GitHub');
+    } else {
+      // No cloud data — push local
+      const local = getLocalData();
+      const ok = await pushToGitHub(local, null);
+      if (ok) {
+        setLastSync(new Date().toISOString());
+        updateSyncStatus('green');
+        showToast('☁️ Initial data pushed');
+      } else {
+        showToast('❌ Push failed — check token');
+      }
+    }
+  } catch (e) {
+    updateSyncStatus('red', 'sync failed');
+    showToast('❌ Sync failed: ' + e.message);
+  }
+}
+
+function getDay(dateStr) {
+  const data = getData();
+  if (!data.days[dateStr]) data.days[dateStr] = { blocks: [], notes: '' };
+  return data.days[dateStr];
+}
+
+function getBlocks(dateStr) {
+  const day = getDay(dateStr);
+  return (day.blocks || []).sort((a,b) => timeToMin(a.start) - timeToMin(b.start));
+}
+
+function saveDay(dateStr, dayData) {
+  const data = getData();
+  data.days[dateStr] = dayData;
+  data.days[dateStr].blocks = (data.days[dateStr].blocks || []).sort((a,b) => timeToMin(a.start) - timeToMin(b.start));
+  saveData(data);
+}
+
+function genId() { return 'bl_' + Math.random().toString(36).slice(2,10); }
+function timeToMin(t) { const [h,m] = t.split(':').map(Number); return h*60+m; }
+function minToTime(m) { return String(Math.floor(m/60)).padStart(2,'0') + ':' + String(m%60).padStart(2,'0'); }
+
+function tierClass(tier) {
+  const map = {'🔴':'tier-red','🟡':'tier-amber','🟢':'tier-green','🔵':'tier-blue'};
+  return map[tier] || 'tier-amber';
+}
+function tierColor(tier) {
+  const map = {'🔴':'#ef4444','🟡':'#f59e0b','🟢':'#22c55e','🔵':'#3b82f6'};
+  return map[tier] || '#f59e0b';
+}
+function formatDate(dateStr) { const d = new Date(dateStr + 'T12:00:00'); return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }); }
+function todayStr() { const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+// ─── Render Month ──────────────────────────────
+function renderMonth() {
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+  document.getElementById('monthLabel').textContent = new Date(year, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const firstDay = new Date(year, month, 1);
+  let startDay = firstDay.getDay() - 1; if (startDay < 0) startDay = 6;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const prevMonthDays = new Date(year, month, 0).getDate();
+  const grid = document.getElementById('monthGrid');
+  grid.innerHTML = '';
+  const today = todayStr();
+  const totalCells = Math.ceil((startDay + daysInMonth) / 7) * 7;
+  for (let i = 0; i < totalCells; i++) {
+    let dayNum, dateStr, isOther = false;
+    if (i < startDay) {
+      dayNum = prevMonthDays - startDay + i + 1;
+      const prevMonth = month === 0 ? 11 : month - 1;
+      const prevYear = month === 0 ? year - 1 : year;
+      dateStr = prevYear + '-' + String(prevMonth + 1).padStart(2,'0') + '-' + String(dayNum).padStart(2,'0');
+      isOther = true;
+    } else if (i >= startDay + daysInMonth) {
+      dayNum = i - startDay - daysInMonth + 1;
+      const nextMonth = month === 11 ? 0 : month + 1;
+      const nextYear = month === 11 ? year + 1 : year;
+      dateStr = nextYear + '-' + String(nextMonth + 1).padStart(2,'0') + '-' + String(dayNum).padStart(2,'0');
+      isOther = true;
+    } else {
+      dayNum = i - startDay + 1;
+      dateStr = year + '-' + String(month + 1).padStart(2,'0') + '-' + String(dayNum).padStart(2,'0');
+    }
+    const cell = document.createElement('div');
+    cell.className = 'day-cell' + (isOther ? ' other-month' : '') + (dateStr === today ? ' today' : '') + (dateStr === selectedDate ? ' selected' : '');
+    cell.dataset.date = dateStr;
+    const num = document.createElement('div');
+    num.className = 'day-num';
+    num.textContent = dayNum;
+    cell.appendChild(num);
+    const dayBlocks = getBlocks(dateStr);
+    if (dayBlocks.length > 0) {
+      if (dayBlocks.length <= 3) {
+        const dots = document.createElement('div');
+        dots.className = 'block-dots';
+        dayBlocks.forEach(b => { const dot = document.createElement('div'); dot.className = 'block-dot'; dot.style.background = tierColor(b.tier); dots.appendChild(dot); });
+        cell.appendChild(dots);
+      } else {
+        const tiers = {};
+        dayBlocks.forEach(b => { tiers[b.tier] = (tiers[b.tier] || 0) + 1; });
+        const summary = document.createElement('div');
+        summary.className = 'day-drain-summary';
+        for (const [tier, count] of Object.entries(tiers)) {
+          if (count > 0) { const chip = document.createElement('span'); chip.className = 'drain-chip'; chip.style.background = tierColor(tier); chip.textContent = tier + count; summary.appendChild(chip); }
+        }
+        cell.appendChild(summary);
+      }
+    }
+    cell.addEventListener('click', () => openDayView(dateStr));
+    grid.appendChild(cell);
+  }
+  if (selectedDate) localStorage.setItem(SEL_DAY_KEY, selectedDate);
+}
+
+// ─── Render Day View ───────────────────────────
+function renderDayView() {
+  if (!selectedDate) return;
+  document.getElementById('dayViewTitle').textContent = formatDate(selectedDate);
+  const day = getDay(selectedDate);
+  document.getElementById('dayViewInfo').textContent = (day.notes || '') + (day.notes ? ' · ' : '') + `${getBlocks(selectedDate).length} blocks`;
+  const grid = document.getElementById('timeGrid');
+  grid.innerHTML = '';
+  const startHour = 6, endHour = 22;
+  const blocks = getBlocks(selectedDate);
+  for (let h = startHour; h < endHour; h++) {
+    for (let m = 0; m < 60; m += 15) {
+      const row = document.createElement('div');
+      row.className = 'time-row';
+      row.dataset.time = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+      const label = document.createElement('div');
+      label.className = 'time-label';
+      label.textContent = m === 0 ? String(h).padStart(2,'0') + ':00' : (m === 30 ? '·30' : '');
+      row.appendChild(label);
+      const slotArea = document.createElement('div');
+      slotArea.className = 'slot-area';
+      for (let s = 0; s < 4; s++) {
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.addEventListener('click', () => { const t = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0'); openNewBlock(t); });
+        slotArea.appendChild(slot);
+      }
+      row.appendChild(slotArea);
+      grid.appendChild(row);
+    }
+  }
+  const overlay = document.createElement('div');
+  overlay.className = 'blocks-overlay';
+  const rowHeight = 32, ppm = rowHeight / 15, dayStartM = startHour * 60;
+  blocks.forEach(b => {
+    const startM = timeToMin(b.start), endM = timeToMin(b.end), dur = endM - startM;
+    const el = document.createElement('div');
+    el.className = 'grid-block ' + tierClass(b.tier);
+    el.style.top = ((startM - dayStartM) * ppm) + 'px';
+    el.style.height = Math.max(dur * ppm, 20) + 'px';
+    const t = document.createElement('div'); t.className = 'bl-title'; t.textContent = b.tier + ' ' + b.title;
+    const tm = document.createElement('div'); tm.className = 'bl-time'; tm.textContent = b.start + ' – ' + b.end;
+    el.appendChild(t); el.appendChild(tm);
+    el.addEventListener('click', (e) => { e.stopPropagation(); openEditBlock(b.id); });
+    overlay.appendChild(el);
+  });
+  // Now line
+  const now = new Date();
+  const nowM = now.getHours() * 60 + now.getMinutes();
+  if (todayStr() === selectedDate && nowM >= dayStartM && nowM < endHour * 60) {
+    const line = document.createElement('div');
+    line.className = 'now-line';
+    line.style.top = ((nowM - dayStartM) * ppm) + 'px';
+    overlay.appendChild(line);
+  }
+  grid.style.position = 'relative';
+  grid.appendChild(overlay);
+}
+
+// ─── View Switching ────────────────────────────
+function openDayView(dateStr) {
+  selectedDate = dateStr;
+  document.getElementById('monthGrid').style.display = 'none';
+  document.getElementById('dayView').classList.add('active');
+  document.getElementById('viewToggleBtn').textContent = '📅 Day';
+  currentView = 'day';
+  document.querySelectorAll('.day-cell.selected').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.day-cell').forEach(c => { if (c.dataset.date === dateStr) c.classList.add('selected'); });
+  renderDayView();
+}
+function closeDayView() {
+  selectedDate = null;
+  document.getElementById('monthGrid').style.display = 'grid';
+  document.getElementById('dayView').classList.remove('active');
+  currentView = 'month';
+  renderMonth();
+}
+function toggleDayView() {
+  if (currentView === 'day') closeDayView();
+  else if (selectedDate) openDayView(selectedDate);
+  else openDayView(todayStr());
+}
+
+// ─── Navigation ────────────────────────────────
+function shiftMonth(delta) { if (!document.getElementById('monthGrid').style.display || document.getElementById('monthGrid').style.display !== 'none') { viewDate.setMonth(viewDate.getMonth() + delta); renderMonth(); } }
+function goToMonth(monthIndex) { viewDate.setMonth(parseInt(monthIndex)); renderMonth(); }
+function goToToday() { const d = new Date(); viewDate = new Date(d.getFullYear(), d.getMonth(), 1); if (currentView === 'day') openDayView(todayStr()); else renderMonth(); }
+
+// ─── Modal ─────────────────────────────────────
+function openNewBlock(prefillTime) {
+  editingBlockId = null;
+  document.getElementById('modalTitle').textContent = 'New Block';
+  document.getElementById('blockTitle').value = '';
+  document.getElementById('blockNotes').value = '';
+  document.getElementById('hunaiToggle').checked = false;
+  document.getElementById('deleteBtn').style.display = 'none';
+  document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.tier-btn[data-tier="🟡"]').classList.add('active');
+  if (prefillTime) {
+    const [h, m] = prefillTime.split(':').map(Number);
+    document.getElementById('blockStart').value = prefillTime;
+    document.getElementById('blockEnd').value = String(Math.min(h + 1, 22)).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+  } else {
+    const n = new Date();
+    const mins = Math.ceil((n.getHours() * 60 + n.getMinutes()) / 15) * 15;
+    document.getElementById('blockStart').value = minToTime(mins);
+    document.getElementById('blockEnd').value = minToTime(mins + 60);
+  }
+  document.getElementById('modalOverlay').classList.add('active');
+  document.getElementById('blockTitle').focus();
+}
+function openEditBlock(blockId) {
+  editingBlockId = blockId;
+  const blocks = getBlocks(selectedDate);
+  const block = blocks.find(b => b.id === blockId);
+  if (!block) return;
+  document.getElementById('modalTitle').textContent = 'Edit Block';
+  document.getElementById('blockTitle').value = block.title;
+  document.getElementById('blockStart').value = block.start;
+  document.getElementById('blockEnd').value = block.end;
+  document.getElementById('blockNotes').value = block.notes || '';
+  document.getElementById('deleteBtn').style.display = 'inline-block';
+  document.getElementById('hunaiToggle').checked = block.title.startsWith('Hunar.ai : ');
+  document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('active'));
+  const tb = document.querySelector(`.tier-btn[data-tier="${block.tier}"]`);
+  if (tb) tb.classList.add('active');
+  document.getElementById('modalOverlay').classList.add('active');
+  document.getElementById('blockTitle').focus();
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); editingBlockId = null; }
+function selectTier(btn) { document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+function snapTo15(t) { return minToTime(Math.round(timeToMin(t) / 15) * 15); }
+function saveBlock() {
+  const title = document.getElementById('blockTitle').value.trim();
+  if (!title) { showToast('Give the block a name'); return; }
+  let tier = '🟡';
+  const at = document.querySelector('.tier-btn.active');
+  if (at) tier = at.dataset.tier;
+  let start = snapTo15(document.getElementById('blockStart').value);
+  let end = snapTo15(document.getElementById('blockEnd').value);
+  if (timeToMin(start) >= timeToMin(end)) { showToast('End must be after start'); return; }
+  let notes = document.getElementById('blockNotes').value.trim();
+  const isHunai = document.getElementById('hunaiToggle').checked;
+  let finalTitle = title;
+  const prefix = 'Hunar.ai : ';
+  if (isHunai && !finalTitle.startsWith(prefix)) finalTitle = prefix + finalTitle;
+  else if (!isHunai && finalTitle.startsWith(prefix)) finalTitle = finalTitle.slice(prefix.length);
+  const day = getDay(selectedDate);
+  const data = getData();
+  if (editingBlockId) {
+    const idx = day.blocks.findIndex(b => b.id === editingBlockId);
+    if (idx >= 0) day.blocks[idx] = { ...day.blocks[idx], start, end, title: finalTitle, tier, notes };
+  } else {
+    const overlap = day.blocks.filter(b => timeToMin(b.start) < timeToMin(end) && timeToMin(start) < timeToMin(b.end));
+    if (overlap.length > 0 && !confirm(`Overlaps with ${overlap.length} block(s). Add anyway?`)) return;
+    day.blocks.push({ id: genId(), start, end, title: finalTitle, tier, notes });
+  }
+  data.days[selectedDate] = day;
+  saveData(data);
+  closeModal();
+  renderDayView();
+  showToast('✅ Block saved');
+}
+function deleteBlock() {
+  if (!editingBlockId || !confirm('Delete this block?')) return;
+  const day = getDay(selectedDate);
+  day.blocks = day.blocks.filter(b => b.id !== editingBlockId);
+  const data = getData();
+  data.days[selectedDate] = day;
+  saveData(data);
+  closeModal();
+  renderDayView();
+  showToast('🗑️ Deleted');
+}
+function clearDay() {
+  if (!confirm(`Remove all blocks from ${formatDate(selectedDate)}?`)) return;
+  const data = getData();
+  data.days[selectedDate] = { blocks: [], notes: '' };
+  saveData(data);
+  renderDayView();
+  showToast('🧹 Day cleared');
+}
+function autoInsertRecovery() {
+  const blocks = getBlocks(selectedDate);
+  if (blocks.length === 0) { showToast('No blocks to separate'); return; }
+  const data = getData();
+  const settings = data.settings || { recoveryMinutes: 15, recoveryTier: '🔵', noBackToBack: ['🔴'] };
+  const recMin = settings.recoveryMinutes || 15;
+  const recTier = settings.recoveryTier || '🔵';
+  const noBack = new Set(settings.noBackToBack || ['🔴']);
+  let sorted = [...blocks].sort((a,b) => timeToMin(a.start) - timeToMin(b.start));
+  let added = 0, i = 0;
+  while (i < sorted.length - 1) {
+    const curr = sorted[i], next = sorted[i + 1];
+    const gap = timeToMin(next.start) - timeToMin(curr.end);
+    const violation = (curr.tier === next.tier && noBack.has(curr.tier));
+    if ((violation || gap > 15) && gap < recMin + 5) {
+      const recStart = timeToMin(curr.end);
+      const recEnd = Math.min(recStart + recMin, timeToMin(next.start));
+      if (recEnd <= timeToMin(next.start) && recEnd > recStart) {
+        sorted.splice(i + 1, 0, { id: genId(), start: minToTime(recStart), end: minToTime(recEnd), title: '🔵 Recovery — ' + recMin + 'min reset', tier: recTier, notes: '' });
+        added++; i++;
+      }
+    }
+    i++;
+  }
+  data.days[selectedDate].blocks = sorted;
+  saveData(data);
+  renderDayView();
+  showToast(`🔵 Inserted ${added} recovery block(s)`);
+}
+
+// ─── Export / Import ───────────────────────────
+function exportData() {
+  const data = getData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'greg-calendar-' + todayStr() + '.json'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('📤 Exported');
+}
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!imported.days) { showToast('❌ Invalid file'); return; }
+      const current = getData();
+      for (const [dateKey, dayData] of Object.entries(imported.days)) {
+        if (!current.days[dateKey]) { current.days[dateKey] = dayData; }
+        else {
+          const existingIds = new Set((current.days[dateKey].blocks || []).map(b => b.id));
+          for (const b of (dayData.blocks || [])) { if (!existingIds.has(b.id)) current.days[dateKey].blocks.push(b); }
+        }
+      }
+      saveData(current);
+      renderMonth();
+      showToast('📥 Imported');
+    } catch { showToast('❌ Parse error'); }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ─── Settings ───────────────────────────────────
+function openSettings() {
+  document.getElementById('githubTokenInput').value = getToken();
+  const lastSync = getLastSync();
+  document.getElementById('lastSyncTime').textContent = lastSync ? new Date(lastSync).toLocaleString() : 'never';
+  document.getElementById('settingsOverlay').classList.add('active');
+}
+function closeSettings() { document.getElementById('settingsOverlay').classList.remove('active'); }
+function saveSettings() {
+  const token = document.getElementById('githubTokenInput').value.trim();
+  if (token) setToken(token);
+  closeSettings();
+  showToast('⚙️ Settings saved');
+  // Try sync
+  if (token) setTimeout(syncNow, 500);
+}
+async function testGitHubConnection() {
+  const token = document.getElementById('githubTokenInput').value.trim();
+  if (!token) { showToast('Enter a token first'); return; }
+  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}`;
+  try {
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+    if (res.ok) showToast('✅ GitHub connection OK — token works!');
+    else if (res.status === 401) showToast('❌ Token invalid or expired');
+    else if (res.status === 403) showToast('❌ Token lacks permissions');
+    else showToast(`❌ GitHub error ${res.status}`);
+  } catch { showToast('❌ Network error'); }
+}
+
+// ─── Toast ─────────────────────────────────────
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ─── Init ──────────────────────────────────────
+async function init() {
+  const saved = localStorage.getItem(SEL_DAY_KEY);
+  if (saved) selectedDate = saved;
+
+  // Populate month picker
+  const picker = document.getElementById('monthPicker');
+  if (picker) {
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    months.forEach((name, i) => { const opt = document.createElement('option'); opt.value = i; opt.textContent = name; picker.appendChild(opt); });
+  }
+
+  // Load from cloud first
+  const token = getToken();
+  if (token) {
+    updateSyncStatus('amber', 'loading...');
+    await loadFromCloud();
+  } else {
+    updateSyncStatus('amber', 'no token');
+    // Ensure seed data exists
+    if (!localStorage.getItem(DATA_KEY)) {
+      localStorage.setItem(DATA_KEY, JSON.stringify(SEED_DATA));
+    }
+  }
+
+  renderMonth();
+  document.getElementById('monthGrid').style.display = 'grid';
+  document.getElementById('dayView').classList.remove('active');
+}
+
+document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('settingsOverlay').classList.contains('active')) { closeSettings(); return; }
+    if (document.getElementById('modalOverlay').classList.contains('active')) { closeModal(); return; }
+    if (currentView === 'day' && selectedDate) closeDayView();
+  }
+  if (e.key === 'n' && currentView === 'day' && !e.ctrlKey && !e.metaKey) {
+    const n = new Date();
+    openNewBlock(minToTime(Math.ceil((n.getHours() * 60 + n.getMinutes()) / 15) * 15));
+  }
+});
+</script>
+</body>
+</html>

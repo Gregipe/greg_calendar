@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "lastUpdated": "2026-05-11T11:15:00",
+  "settings": {
+    "dayStart": "06:00",
+    "dayEnd": "22:00",
+    "slotMinutes": 15,
+    "tiers": {
+      "🔴": {"label": "High Drain", "color": "#ef4444"},
+      "🟡": {"label": "Medium Drain", "color": "#f59e0b"},
+      "🟢": {"label": "Low Drain", "color": "#22c55e"},
+      "🔵": {"label": "Restorative", "color": "#3b82f6"}
+    },
+    "recoveryMinutes": 15,
+    "recoveryTier": "🔵",
+    "noBackToBack": ["🔴"],
+    "hunaiPrefix": "Hunar.ai : "
+  },
+  "days": {
+    "2026-05-11": {
+      "notes": "Monday — Planning + syncs",
+      "blocks": [
+        {"id": "bl_001", "start": "08:30", "end": "09:15", "title": "Deep work block", "tier": "🔴", "notes": "Bajaj analysis / ESOP / strategic — peak morning brain"},
+        {"id": "bl_002", "start": "09:15", "end": "09:30", "title": "Reset — water, stand, step outside", "tier": "🔵", "notes": ""},
+        {"id": "bl_003", "start": "09:30", "end": "10:30", "title": "Hunar.ai : Morning Pilot Sync", "tier": "🟡", "notes": "Mon/Thu recurring"},
+        {"id": "bl_004", "start": "10:30", "end": "10:45", "title": "Reset — walk, stretch", "tier": "🔵", "notes": ""},
+        {"id": "bl_005", "start": "10:45", "end": "12:00", "title": "Deep work block", "tier": "🔴", "notes": "Continue strategic work / proposal prep"},
+        {"id": "bl_006", "start": "12:00", "end": "12:45", "title": "Hunar.ai : Magic Billion <> Hunar.ai", "tier": "🟡", "notes": ""},
+        {"id": "bl_007", "start": "12:45", "end": "13:00", "title": "Walk / water / lunch transition", "tier": "🔵", "notes": ""},
+        {"id": "bl_008", "start": "13:00", "end": "13:30", "title": "Lunch + low-input reading", "tier": "🟢", "notes": "Articles, research, podcast"},
+        {"id": "bl_009", "start": "13:30", "end": "14:00", "title": "Output block", "tier": "🟡", "notes": "LinkedIn drafting / comms / follow-ups"},
+        {"id": "bl_010", "start": "14:00", "end": "14:30", "title": "Commercials", "tier": "🟡", "notes": "Meeting"},
+        {"id": "bl_011", "start": "14:30", "end": "15:00", "title": "1Mg SBI", "tier": "🟡", "notes": "Meeting"},
+        {"id": "bl_012", "start": "15:00", "end": "15:30", "title": "Recovery layer", "tier": "🔵", "notes": "🚶 10min walk outside (no phone) → 🏋️ 3x pullups / 10 pushups → 💧 350ml water"},
+        {"id": "bl_013", "start": "15:30", "end": "16:00", "title": "Research / input", "tier": "🟢", "notes": "VoiceAI readings, industry intel"},
+        {"id": "bl_014", "start": "16:00", "end": "17:00", "title": "Wind-down / overflow", "tier": "🟢", "notes": "Overflow or lighter work"}
+      ]
+    }
+  }
+}
