@@ -617,7 +617,10 @@ function renderDayView() {
   }
   const overlay = document.createElement('div');
   overlay.className = 'blocks-overlay';
-  const rowHeight = 32, ppm = rowHeight / 15, dayStartM = startHour * 60;
+  // Read actual row height from the DOM so it always matches CSS
+  const firstRow = grid.querySelector('.time-row');
+  const rowHeight = firstRow ? firstRow.offsetHeight : 36;
+  const ppm = rowHeight / 15, dayStartM = startHour * 60;
   blocks.forEach(b => {
     const startM = timeToMin(b.start), endM = timeToMin(b.end), dur = endM - startM;
     const el = document.createElement('div');
