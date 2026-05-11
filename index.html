@@ -88,12 +88,9 @@
   .back-btn:hover { background: var(--surface2); }
   .time-grid-wrap { flex: 1; overflow-y: auto; padding: 0; position: relative; }
   .time-grid { position: relative; min-height: 100%; border-radius: var(--radius-xs); background: var(--surface); box-shadow: var(--shadow); }
-  .time-row { display: flex; border-bottom: 1px solid var(--border); height: 18px; position: relative; }
-  .time-row:last-child { border-bottom: none; }
-  .time-row.half-hour { border-bottom: none; position: relative; }
-  .time-row.half-hour::after { content: ''; position: absolute; left: 54px; right: 0; top: 50%; height: 1px; background: var(--border); }
+  .time-row { display: flex; height: 18px; position: relative; }
+  .time-row.hour-line { border-bottom: 1px solid var(--border); }
   .time-row .time-label { width: 54px; font-size: 11px; color: var(--text); font-family: var(--mono); padding: 0 8px 0 0; text-align: right; flex-shrink: 0; position: relative; top: -7px; user-select: none; font-weight: 600; }
-  .time-row.half-hour .time-label { visibility: hidden; }
   .time-row .slot-area { flex: 1; display: flex; position: relative; }
   .time-row .slot { flex: 1; cursor: pointer; position: relative; transition: background .12s; }
   .time-row .slot:hover { background: rgba(0,122,255,0.06); }
@@ -151,7 +148,6 @@
     .modal-overlay.active { align-items: flex-end; }
     .time-row { height: 16px; }
     .time-row .time-label { width: 40px; font-size: 10px; }
-    .time-row.half-hour::after { left: 40px; }
     .blocks-overlay { left: 40px; }
     .legend { gap: 10px; }
   }
@@ -600,7 +596,7 @@ function renderDayView() {
   for (let h = startHour; h < endHour; h++) {
     for (let m = 0; m < 60; m += 15) {
       const row = document.createElement('div');
-      row.className = 'time-row' + (m === 30 ? ' half-hour' : '');
+      row.className = 'time-row' + (m === 0 ? ' hour-line' : '');
       row.dataset.time = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
       const label = document.createElement('div');
       label.className = 'time-label';
@@ -912,6 +908,13 @@ async function init() {
   renderMonth();
   document.getElementById('monthGrid').style.display = 'grid';
   document.getElementById('dayView').classList.remove('active');
+
+  // Auto-refresh day view every 5 min to keep now-line accurate
+  setInterval(() => {
+    if (currentView === 'day' && selectedDate) {
+      renderDayView();
+    }
+  }, 300000);
 }
 
 document.addEventListener('DOMContentLoaded', init);
