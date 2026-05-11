@@ -90,9 +90,7 @@
   .time-grid { position: relative; min-height: 100%; border-radius: var(--radius-xs); background: var(--surface); box-shadow: var(--shadow); }
   .time-row { display: flex; border-bottom: 1px solid var(--border); height: 18px; position: relative; }
   .time-row:last-child { border-bottom: none; }
-  .time-row.half-hour { border-bottom: 1px dashed rgba(0,0,0,0.08); }
   .time-row .time-label { width: 54px; font-size: 10px; color: var(--text3); font-family: var(--mono); padding: 0 6px 0 0; text-align: right; flex-shrink: 0; position: relative; top: -6px; user-select: none; font-weight: 500; }
-  .time-row .time-label.half-mark { color: transparent; border-top: 1px dashed var(--border); width: 54px; padding: 0; height: 1px; top: 9px; }
   .time-row .slot-area { flex: 1; display: flex; position: relative; }
   .time-row .slot { flex: 1; cursor: pointer; position: relative; transition: background .12s; }
   .time-row .slot:hover { background: rgba(0,122,255,0.06); }
@@ -150,7 +148,6 @@
     .modal-overlay.active { align-items: flex-end; }
     .time-row { height: 16px; }
     .time-row .time-label { width: 40px; font-size: 9px; }
-    .time-row .time-label.half-mark { width: 40px; }
     .blocks-overlay { left: 40px; }
     .legend { gap: 10px; }
   }
@@ -599,10 +596,10 @@ function renderDayView() {
   for (let h = startHour; h < endHour; h++) {
     for (let m = 0; m < 60; m += 15) {
       const row = document.createElement('div');
-      row.className = 'time-row' + (m === 30 ? ' half-hour' : '');
+      row.className = 'time-row';
       row.dataset.time = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
       const label = document.createElement('div');
-      label.className = 'time-label' + (m === 30 ? ' half-mark' : '');
+      label.className = 'time-label';
       if (m === 0) label.textContent = String(h).padStart(2,'0') + ':00';
       else if (m === 30) label.textContent = '·30';
       row.appendChild(label);
