@@ -1,40 +1,877 @@
 {
   "version": 1,
-  "lastUpdated": "2026-05-11T11:15:00",
+  "lastUpdated": "2026-05-11T18:45:09",
   "settings": {
     "dayStart": "06:00",
     "dayEnd": "22:00",
     "slotMinutes": 15,
     "tiers": {
-      "🔴": {"label": "High Drain", "color": "#ef4444"},
-      "🟡": {"label": "Medium Drain", "color": "#f59e0b"},
-      "🟢": {"label": "Low Drain", "color": "#22c55e"},
-      "🔵": {"label": "Restorative", "color": "#3b82f6"}
+      "🔴": {
+        "label": "High Drain",
+        "color": "#ef4444"
+      },
+      "🟡": {
+        "label": "Medium Drain",
+        "color": "#f59e0b"
+      },
+      "🟢": {
+        "label": "Low Drain",
+        "color": "#22c55e"
+      },
+      "🔵": {
+        "label": "Restorative",
+        "color": "#3b82f6"
+      }
     },
     "recoveryMinutes": 15,
     "recoveryTier": "🔵",
-    "noBackToBack": ["🔴"],
+    "noBackToBack": [
+      "🔴"
+    ],
     "hunaiPrefix": "Hunar.ai : "
   },
   "days": {
     "2026-05-11": {
       "notes": "Monday — Planning + syncs",
       "blocks": [
-        {"id": "bl_001", "start": "08:30", "end": "09:15", "title": "Deep work block", "tier": "🔴", "notes": "Bajaj analysis / ESOP / strategic — peak morning brain"},
-        {"id": "bl_002", "start": "09:15", "end": "09:30", "title": "Reset — water, stand, step outside", "tier": "🔵", "notes": ""},
-        {"id": "bl_003", "start": "09:30", "end": "10:30", "title": "Hunar.ai : Morning Pilot Sync", "tier": "🟡", "notes": "Mon/Thu recurring"},
-        {"id": "bl_004", "start": "10:30", "end": "10:45", "title": "Reset — walk, stretch", "tier": "🔵", "notes": ""},
-        {"id": "bl_005", "start": "10:45", "end": "12:00", "title": "Deep work block", "tier": "🔴", "notes": "Continue strategic work / proposal prep"},
-        {"id": "bl_006", "start": "12:00", "end": "12:45", "title": "Hunar.ai : Magic Billion <> Hunar.ai", "tier": "🟡", "notes": ""},
-        {"id": "bl_007", "start": "12:45", "end": "13:00", "title": "Walk / water / lunch transition", "tier": "🔵", "notes": ""},
-        {"id": "bl_008", "start": "13:00", "end": "13:30", "title": "Lunch + low-input reading", "tier": "🟢", "notes": "Articles, research, podcast"},
-        {"id": "bl_009", "start": "13:30", "end": "14:00", "title": "Output block", "tier": "🟡", "notes": "LinkedIn drafting / comms / follow-ups"},
-        {"id": "bl_010", "start": "14:00", "end": "14:30", "title": "Commercials", "tier": "🟡", "notes": "Meeting"},
-        {"id": "bl_011", "start": "14:30", "end": "15:00", "title": "1Mg SBI", "tier": "🟡", "notes": "Meeting"},
-        {"id": "bl_012", "start": "15:00", "end": "15:30", "title": "Recovery layer", "tier": "🔵", "notes": "🚶 10min walk outside (no phone) → 🏋️ 3x pullups / 10 pushups → 💧 350ml water"},
-        {"id": "bl_013", "start": "15:30", "end": "16:00", "title": "Research / input", "tier": "🟢", "notes": "VoiceAI readings, industry intel"},
-        {"id": "bl_014", "start": "16:00", "end": "17:00", "title": "Wind-down / overflow", "tier": "🟢", "notes": "Overflow or lighter work"}
+        {
+          "id": "bl_001",
+          "start": "08:30",
+          "end": "09:15",
+          "title": "Deep work block",
+          "tier": "🔴",
+          "notes": "Bajaj analysis / ESOP / strategic — peak morning brain"
+        },
+        {
+          "id": "bl_002",
+          "start": "09:15",
+          "end": "09:30",
+          "title": "Reset — water, stand, step outside",
+          "tier": "🔵",
+          "notes": ""
+        },
+        {
+          "id": "bl_003",
+          "start": "09:30",
+          "end": "10:30",
+          "title": "Hunar.ai : Morning Pilot Sync",
+          "tier": "🟡",
+          "notes": "Mon/Thu recurring"
+        },
+        {
+          "id": "bl_004",
+          "start": "10:30",
+          "end": "10:45",
+          "title": "Reset — walk, stretch",
+          "tier": "🔵",
+          "notes": ""
+        },
+        {
+          "id": "bl_005",
+          "start": "10:45",
+          "end": "12:00",
+          "title": "Deep work block",
+          "tier": "🔴",
+          "notes": "Continue strategic work / proposal prep"
+        },
+        {
+          "id": "bl_c73e510c",
+          "start": "11:00",
+          "end": "11:30",
+          "title": "Finserv Proposal",
+          "tier": "🔴",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "5bt49m73sjjerhfim1be"
+        },
+        {
+          "id": "bl_006",
+          "start": "12:00",
+          "end": "12:45",
+          "title": "Hunar.ai : Magic Billion <> Hunar.ai",
+          "tier": "🟡",
+          "notes": ""
+        },
+        {
+          "id": "bl_d6956cd2",
+          "start": "12:00",
+          "end": "13:00",
+          "title": "Hunar | AI Voice QA Feedback",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "7jmg9vl294shom75pt2v"
+        },
+        {
+          "id": "bl_ff0ef316",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        },
+        {
+          "id": "bl_007",
+          "start": "12:45",
+          "end": "13:00",
+          "title": "Walk / water / lunch transition",
+          "tier": "🔵",
+          "notes": ""
+        },
+        {
+          "id": "bl_008",
+          "start": "13:00",
+          "end": "13:30",
+          "title": "Lunch + low-input reading",
+          "tier": "🟢",
+          "notes": "Articles, research, podcast"
+        },
+        {
+          "id": "bl_009",
+          "start": "13:30",
+          "end": "14:00",
+          "title": "Output block",
+          "tier": "🟡",
+          "notes": "LinkedIn drafting / comms / follow-ups"
+        },
+        {
+          "id": "bl_010",
+          "start": "14:00",
+          "end": "14:30",
+          "title": "Commercials",
+          "tier": "🟡",
+          "notes": "Meeting"
+        },
+        {
+          "id": "bl_293f2c1f",
+          "start": "14:00",
+          "end": "14:30",
+          "title": "Commercial Standardisation",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "0ng33tc5i40nmgsu74e9"
+        },
+        {
+          "id": "bl_011",
+          "start": "14:30",
+          "end": "15:00",
+          "title": "1Mg SBI",
+          "tier": "🟡",
+          "notes": "Meeting"
+        },
+        {
+          "id": "bl_6f823d8f",
+          "start": "14:30",
+          "end": "15:00",
+          "title": "Hunar.ai : 1MG (SBI) <> Hunar.AI",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "7fkp5gieut79skrh49hg"
+        },
+        {
+          "id": "bl_012",
+          "start": "15:00",
+          "end": "15:30",
+          "title": "Recovery layer",
+          "tier": "🔵",
+          "notes": "🚶 10min walk outside (no phone) → 🏋️ 3x pullups / 10 pushups → 💧 350ml water"
+        },
+        {
+          "id": "bl_013",
+          "start": "15:30",
+          "end": "16:00",
+          "title": "Research / input",
+          "tier": "🟢",
+          "notes": "VoiceAI readings, industry intel"
+        },
+        {
+          "id": "bl_af9ad702",
+          "start": "15:30",
+          "end": "16:15",
+          "title": "Adhiraj <> Greg",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "3hufjiivvd7d5sli2krv"
+        },
+        {
+          "id": "bl_014",
+          "start": "16:00",
+          "end": "17:00",
+          "title": "Wind-down / overflow",
+          "tier": "🟢",
+          "notes": "Overflow or lighter work"
+        },
+        {
+          "id": "bl_051d6b5b",
+          "start": "17:00",
+          "end": "17:15",
+          "title": "Sandeep <> Greg",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "7hk69jn5jrgss3ojhn4c"
+        },
+        {
+          "id": "bl_9790ed12",
+          "start": "17:15",
+          "end": "17:30",
+          "title": "Abhishek Catchup call.",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "1h7dd9vveicepkf8bka1"
+        }
       ]
+    },
+    "2026-07-01": {
+      "blocks": [
+        {
+          "id": "bl_cd23a10b",
+          "start": "09:00",
+          "end": "09:30",
+          "title": "1000 INR - Enterprise vs Self Serve :)",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "5h1hg2va55q7o2llscov"
+        }
+      ],
+      "notes": "📅 1 Google Calendar events"
+    },
+    "2026-05-18": {
+      "blocks": [
+        {
+          "id": "bl_0fbcb01f",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        }
+      ],
+      "notes": "📅 1 Google Calendar events"
+    },
+    "2026-05-12": {
+      "blocks": [
+        {
+          "id": "bl_174b108f",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        },
+        {
+          "id": "bl_fb252e76",
+          "start": "15:30",
+          "end": "16:15",
+          "title": "Hunar.ai : Spectrum <> Hunar.ai",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "5p9letvriuhup9gpe4su"
+        }
+      ],
+      "notes": "📅 2 Google Calendar events"
+    },
+    "2026-05-08": {
+      "blocks": [
+        {
+          "id": "bl_f3f0b3ce",
+          "start": "10:30",
+          "end": "11:15",
+          "title": "Dineout Prompt Fixes",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "463qgsevonmujont5a14"
+        },
+        {
+          "id": "bl_f1131086",
+          "start": "12:00",
+          "end": "13:00",
+          "title": "Hunar | AI Voice QA Feedback",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "7jmg9vl294shom75pt2v"
+        },
+        {
+          "id": "bl_46663853",
+          "start": "12:00",
+          "end": "13:00",
+          "title": "[Placeholder] RFP Discussion - Hunar AI",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "5jooffj27oa4i3cr2d8o"
+        },
+        {
+          "id": "bl_9c8c8335",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        },
+        {
+          "id": "bl_e043a890",
+          "start": "13:00",
+          "end": "13:30",
+          "title": "Kanik : Greg",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "0775p0v69imenh9kpo3n"
+        },
+        {
+          "id": "bl_193ca435",
+          "start": "14:30",
+          "end": "15:00",
+          "title": "Hunar.ai : Hunar.AI <> TATA1MG(Weightwise)",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "6ftop3ldpgttqqr49a8t"
+        },
+        {
+          "id": "bl_3549b8cf",
+          "start": "14:30",
+          "end": "15:00",
+          "title": "Block - 1mg",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "76u3g7hccepjua65i4kh"
+        },
+        {
+          "id": "bl_60445dcf",
+          "start": "15:30",
+          "end": "16:00",
+          "title": "Hunar.ai : Leveraging Social Media for Candidate Sourcing(DLPL<>Hunar)",
+          "tier": "🔴",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "4601fma1i3ia6n8m40v1"
+        },
+        {
+          "id": "bl_1561b0eb",
+          "start": "15:30",
+          "end": "16:00",
+          "title": "Hunar.ai : DLPL <> Hunar.AI ( Social Media )",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "040000008200E00074C5"
+        },
+        {
+          "id": "bl_067b8d06",
+          "start": "16:00",
+          "end": "16:30",
+          "title": "1Mg Hypotheses",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "6do24mvoi36u92q1higl"
+        }
+      ],
+      "notes": "📅 10 Google Calendar events"
+    },
+    "2026-05-07": {
+      "blocks": [
+        {
+          "id": "bl_fb7bb699",
+          "start": "08:30",
+          "end": "09:00",
+          "title": "Greg <> Rohan",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "5ffjjpg1r1t19d2k2crd"
+        },
+        {
+          "id": "bl_35cb0305",
+          "start": "10:00",
+          "end": "11:00",
+          "title": "CPG Webinar: Smart Beats & Dynamic Rerouting",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "7k3supp5rn3rnsmr14n8"
+        },
+        {
+          "id": "bl_1fe71c95",
+          "start": "10:00",
+          "end": "11:00",
+          "title": "MIS Webinar: Smart Beats & Dynamic Rerouting (60 mins)",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "318vsm867crg0s99pmqq"
+        },
+        {
+          "id": "bl_1e4d6ab0",
+          "start": "12:00",
+          "end": "12:30",
+          "title": "Ankit <> Gregory - Discussion",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "node2o6llbnjtlemc4mk"
+        },
+        {
+          "id": "bl_f677b9a4",
+          "start": "12:00",
+          "end": "13:00",
+          "title": "Hunar | AI Voice QA Feedback",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "7jmg9vl294shom75pt2v"
+        },
+        {
+          "id": "bl_471903ec",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        },
+        {
+          "id": "bl_c7de85f0",
+          "start": "13:00",
+          "end": "14:00",
+          "title": "Exit survey discussion",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "5os2ktit5jihgjff630h"
+        },
+        {
+          "id": "bl_cbb45a15",
+          "start": "14:00",
+          "end": "15:00",
+          "title": "Hunar.ai : Shriram Finance",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "1bfatf07vp578vvjs7up"
+        },
+        {
+          "id": "bl_2fe2caa9",
+          "start": "14:30",
+          "end": "15:00",
+          "title": "Starbucks<>Hunar (PAN India rollout sync)",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "63bff8qlo7knjb0rbm9s"
+        },
+        {
+          "id": "bl_fef09702",
+          "start": "15:00",
+          "end": "15:30",
+          "title": "Instamart <> Hunar",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "4lrjrpc190dpl9prgpj6"
+        },
+        {
+          "id": "bl_ab304c93",
+          "start": "16:00",
+          "end": "17:00",
+          "title": "Fw: Hunar Integration with SF",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "040000008200E00074C5"
+        }
+      ],
+      "notes": "📅 11 Google Calendar events"
+    },
+    "2026-05-13": {
+      "blocks": [
+        {
+          "id": "bl_0fd6d704",
+          "start": "12:00",
+          "end": "12:30",
+          "title": "Greg x Rupam",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "5olrvg3aq3e4m7ddj09k"
+        },
+        {
+          "id": "bl_ea6b7114",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        },
+        {
+          "id": "bl_693fb9f6",
+          "start": "15:00",
+          "end": "15:45",
+          "title": "Hunar.ai : Muthoot <> Hunar.ai",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "02pfpd0kuees95j8hhga"
+        }
+      ],
+      "notes": "📅 3 Google Calendar events"
+    },
+    "2026-05-06": {
+      "blocks": [
+        {
+          "id": "bl_80890048",
+          "start": "12:00",
+          "end": "13:00",
+          "title": "Hunar | AI Voice QA Feedback",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "7jmg9vl294shom75pt2v"
+        },
+        {
+          "id": "bl_bf4fb378",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        },
+        {
+          "id": "bl_71773625",
+          "start": "14:00",
+          "end": "14:45",
+          "title": "Weekly Billing and Client Updates",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "stsufsu4j1g52vokcpmo"
+        },
+        {
+          "id": "bl_a03abbef",
+          "start": "15:00",
+          "end": "15:30",
+          "title": "Voice Bot <> Hunar",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "1qr085agi9pu8h5iqumo"
+        },
+        {
+          "id": "bl_70654b75",
+          "start": "15:45",
+          "end": "16:00",
+          "title": "Abhinav - Target discussion",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "36v480bt3id5bncqof7m"
+        },
+        {
+          "id": "bl_a8ba3249",
+          "start": "16:00",
+          "end": "16:30",
+          "title": "Hunar.ai : Customer Success_Interview_Hunar.AI (Mir Mohsin Ali <> Gregory)",
+          "tier": "🔴",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "1sg8umdnhbh5ut26i9u3"
+        },
+        {
+          "id": "bl_fd9c5cbd",
+          "start": "16:30",
+          "end": "17:00",
+          "title": "Karan <> Greg Chat",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "20260506T105439Z-880"
+        },
+        {
+          "id": "bl_af8c1155",
+          "start": "16:30",
+          "end": "17:00",
+          "title": "Karan <> Greg Call",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "7sndfssjms5sh7tag7s0"
+        },
+        {
+          "id": "bl_0eb177c1",
+          "start": "18:00",
+          "end": "18:45",
+          "title": "Swiggy Dineout Prompt",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "2u6uqt3cedjvmphu18qv"
+        }
+      ],
+      "notes": "📅 9 Google Calendar events"
+    },
+    "2026-05-15": {
+      "blocks": [
+        {
+          "id": "bl_b505e12b",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        }
+      ],
+      "notes": "📅 1 Google Calendar events"
+    },
+    "2026-05-05": {
+      "blocks": [
+        {
+          "id": "bl_ff9e169e",
+          "start": "12:00",
+          "end": "12:45",
+          "title": "Vishal <> Greg",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "326pdjmv4625aq2d82pu"
+        },
+        {
+          "id": "bl_75895e9c",
+          "start": "12:00",
+          "end": "13:00",
+          "title": "Hunar | AI Voice QA Feedback",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "7jmg9vl294shom75pt2v"
+        },
+        {
+          "id": "bl_296ecc51",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        },
+        {
+          "id": "bl_296bfe7e",
+          "start": "14:00",
+          "end": "14:45",
+          "title": "SF Discussion : Starbucks",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "5t9ki0ugpae15263v56k"
+        },
+        {
+          "id": "bl_d9070fc4",
+          "start": "15:00",
+          "end": "15:30",
+          "title": "Marketing campaign- Universities",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "71giatjpcublkah5rpi4"
+        },
+        {
+          "id": "bl_2d01c123",
+          "start": "16:30",
+          "end": "17:15",
+          "title": "Hunar.ai : Hunar.AI_Quick Townhall",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "77nohprchk78hj6qbabt"
+        }
+      ],
+      "notes": "📅 6 Google Calendar events"
+    },
+    "2026-05-29": {
+      "blocks": [
+        {
+          "id": "bl_93c6cea7",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        }
+      ],
+      "notes": "📅 1 Google Calendar events"
+    },
+    "2026-05-28": {
+      "blocks": [
+        {
+          "id": "bl_bbb6fb70",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        }
+      ],
+      "notes": "📅 1 Google Calendar events"
+    },
+    "2026-05-19": {
+      "blocks": [
+        {
+          "id": "bl_8e9630d4",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        }
+      ],
+      "notes": "📅 1 Google Calendar events"
+    },
+    "2026-05-20": {
+      "blocks": [
+        {
+          "id": "bl_ae19baf4",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        }
+      ],
+      "notes": "📅 1 Google Calendar events"
+    },
+    "2026-05-25": {
+      "blocks": [
+        {
+          "id": "bl_405a4eaf",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        }
+      ],
+      "notes": "📅 1 Google Calendar events"
+    },
+    "2026-05-14": {
+      "blocks": [
+        {
+          "id": "bl_eab3c314",
+          "start": "09:00",
+          "end": "09:45",
+          "title": "Pipeline review : Weekly",
+          "tier": "🔴",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "0jedjfaast92i3pmj02m"
+        },
+        {
+          "id": "bl_fae2d10f",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        }
+      ],
+      "notes": "📅 2 Google Calendar events"
+    },
+    "2026-05-22": {
+      "blocks": [
+        {
+          "id": "bl_60162595",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        }
+      ],
+      "notes": "📅 1 Google Calendar events"
+    },
+    "2026-05-27": {
+      "blocks": [
+        {
+          "id": "bl_88a3fb2b",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        }
+      ],
+      "notes": "📅 1 Google Calendar events"
+    },
+    "2026-05-26": {
+      "blocks": [
+        {
+          "id": "bl_693cdb1b",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        }
+      ],
+      "notes": "📅 1 Google Calendar events"
+    },
+    "2026-05-21": {
+      "blocks": [
+        {
+          "id": "bl_2de082ec",
+          "start": "12:30",
+          "end": "13:00",
+          "title": "Genesys -Hunar Integration",
+          "tier": "🟡",
+          "notes": "",
+          "source": "google-calendar",
+          "uid": "75pjmpi08ih6p1j5dtev"
+        }
+      ],
+      "notes": "📅 1 Google Calendar events"
     }
   }
 }
